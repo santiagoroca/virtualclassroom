@@ -1,13 +1,14 @@
 @echo off
+set master = dev-test
 
 GOTO CASE_%1
 
 :CASE_-rebase
     set branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
-    git checkout dev-test
-    git pull origin dev-test
+    git checkout %master%
+    git pull origin %master%
     git checkout %branch%
-    git rebase dev-test
+    git rebase %master%
     GOTO END_SWITCH
 
 :CASE_-rebasefrom
@@ -26,8 +27,8 @@ GOTO CASE_%1
     GOTO END_SWITCH
 
 :CASE_-create
-    git checkout dev-test
-    git pull origin dev-test
+    git checkout %master%
+    git pull origin %master%
     git checkout -b %2%
     GOTO END_SWITCH
 
