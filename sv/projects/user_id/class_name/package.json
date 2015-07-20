@@ -1,0 +1,31 @@
+{
+    "name": "viewer-server",
+    "version": "10.3.1",
+    "description": "NodeJS' viewer server",
+    "author": "Santiago Roca <snroca@hotmail.com>",
+    "bin": {
+    "module-name": "./bin/module-name"
+    },
+    "scripts": {
+        "start": "node server.js"
+    },
+    "main": "lib/foo.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/YouBIM/YouBIM_v4_Viewer"
+    },
+    "bugs": {
+    "url": "https://github.com/nodejitsu/browsenpm.org/issues"
+    },
+    "dependencies": {
+        "http": "*",
+        "websocket": "*",
+        "graceful-fs" : "*",
+        "async" : "*",
+        "express" : "*",
+        "body-parser": "*",
+        "mkdirp": "*"
+    },
+    "preferGlobal": true,
+    "private": true
+}

@@ -1,0 +1,191 @@
+<html>
+	<head>
+		
+		<style type="text/css" media="screen">
+
+			body {
+				overflow: hidden;
+				margin: 0px;
+				background: #141414
+			}
+
+			#editor {
+				margin: 0;
+				position: absolute;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				right: 0;
+			}
+
+			.body-container {
+				height: 90%;
+			}
+
+			#editor-container {
+				width: 85%;
+				height: 100%;
+				position: relative;
+				float: left;
+			}
+
+			#treeview {
+				width: 15%;
+				height: 100%;
+				float: left;
+				overflow: auto;
+			}
+
+			#header {
+				height: 10%;
+			}
+
+			.file_name_container {
+				margin-left: 15%;
+				height: 20px;
+				width: 200px;
+			}
+
+			#file_name {
+				margin-left: 47px;
+			}
+
+			#file_name h5 {
+				background: #141414;
+				height: 100%;
+				border-radius: 3px 3px 0 0;
+				color: white;
+				text-align: center;
+				font-size: 10px;
+				padding-top: 5px;
+			}
+
+			.item_title {
+				color: #f4f4f4;
+				padding: 5px;
+				cursor: pointer;
+			}
+
+			.item_title:hover {
+				background: #f4f4f4;
+				color: #444
+			}
+
+			.fa {
+				margin-right: 10px;
+			}
+
+			.active {
+				background: #a4a4a4;
+				color: #777
+			}
+
+			.folder_view {
+  				margin-left: 30px;
+  				display: none;
+			}
+
+		</style>
+		<link rel="stylesheet" type="text/css" href="css/font-awesome.css">
+	</head>
+	<body>
+		<div id="header">
+			<div class="file_name_container" >
+				<div id="file_name" ></div>
+			</div>
+		</div>
+		<div class="body-container">
+			<div id="treeview"></div>
+			<div id="editor-container">
+				<pre id="editor"></pre>
+			</div>
+		</div>
+	</body>
+
+	<script type="text/plain" id="file_template">
+		<div class="<%= active %> item-container item_title"><i class="fa fa-code fa-lg"></i><%= file_name %></div>
+	</script>
+
+	<script type="text/plain" id="folder_template">
+		<div class="<%= active %> item-container folder_container">
+			<div class="item_title"><i class="fa fa-folder fa-lg"></i><%= file_name %></div>
+			<div class="folder_view"></div>
+		</div>
+	</script>
+
+	<script src="underscore-min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="jquery-1.11.3.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script>
+		var editor = ace.edit("editor");
+		editor.setTheme("ace/theme/twilight");
+		editor.getSession().setMode("ace/mode/html");
+	</script>
+
+	<script>
+
+		this.WebSocket = this.WebSocket || this.MozWebSocket;
+	    var connection = new this.WebSocket('ws://localhost:8888');
+
+	    connection.onopen = function () {
+	        this.send(JSON.stringify({
+	            endPoint: 'register', type: 'CLASSROOM', id: 'ads89hasda9hsda89s8dhas8dhas9dhas9dhas9d8', n_active: 'testdoc.js'
+	        }));
+	    }
+
+	    connection.onmessage = function (message) {
+	        var message = JSON.parse(message.data);
+
+	        switch (message.endPoint) {
+	        	case 'current_file_data':
+	        			editor.setValue(message.data);
+	        			editor.clearSelection();
+	        		break;
+
+	        	case 'treeview':
+	        			populate_view ($("#treeview"), message.data);
+	        		break;
+
+	        	case 'err':
+	        			alert (message.data);
+	        		break;	
+
+	            case 'close':
+	                	this.close();
+	                break;
+
+	        }
+
+	    }
+
+	    function populate_view (view, files) {
+	    	var file_template = _.template ($ ("#file_template").html ());
+			var folder_template = _.template ($ ("#folder_template").html ());
+
+	    	for (var i = 0; i < files.length; i++) {
+	    		if (files [i].folder) {
+
+	    			populate_view ($(folder_template({
+						file_name: files [i].name,
+						active: ''
+					})).appendTo (view).click (function () {
+				    	$(this).find ('.folder_view').toggle ();
+				    }).find ('.folder_view'), files [i].files);
+
+	    		} else {
+	    			view.append (file_template({
+						file_name: files [i].name,
+						active: ''
+					}));
+	    		}
+			}
+	    }
+
+	    editor.addEventListener ('change', function (e) {
+	    	connection.send(JSON.stringify({
+	            endPoint: 'change', data: editor.getValue()
+	        }));
+	    });
+
+	</script>
+</html>

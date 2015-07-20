@@ -1,0 +1,120 @@
+<html>
+	<head>
+		
+		<style type="text/css" media="screen">
+
+			body {
+				overflow: hidden;
+				margin: 0px;
+				background: #141414
+			}
+
+			#editor {
+				margin: 0;
+				position: absolute;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				right: 0;
+			}
+
+			.body-container {
+				height: 90%;
+			}
+
+			#editor-container {
+				width: 85%;
+				height: 100%;
+				position: relative;
+				float: left;
+			}
+
+			#treeview {
+				width: 15%;
+				height: 100%;
+				float: left;
+			}
+
+			#header {
+				height: 10%;
+			}
+
+			.file_name_container {
+				margin-left: 15%;
+				height: 20px;
+				width: 200px;
+			}
+
+			#file_name {
+				margin-left: 47px;
+			}
+
+			#file_name h5 {
+				background: #141414;
+				height: 100%;
+				border-radius: 3px 3px 0 0;
+				color: white;
+				text-align: center;
+				font-size: 10px;
+				padding-top: 5px;
+			}
+
+		</style>
+	</head>
+	<body>
+		<div id="header">
+			<div class="file_name_container" >
+				<div id="file_name" ></div>
+			</div>
+		</div>
+		<div class="body-container">
+			<div id="treeview"></div>
+			<div id="editor-container">
+				<pre id="editor"></pre>
+			</div>
+		</div>
+	</body>
+
+	<script src="src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script>
+		var editor = ace.edit("editor");
+		editor.setTheme("ace/theme/twilight");
+		editor.getSession().setMode("ace/mode/javascript");
+	</script>
+
+	<script>
+
+		this.WebSocket = this.WebSocket || this.MozWebSocket;
+	    var connection = new this.WebSocket('ws://localhost:8888');
+
+	    connection.onopen = function () {
+	        this.send(JSON.stringify({
+	            endPoint: 'register', type: 'CLASSROOM', id: 'ads89hasda9hsda89s8dhas8dhas9dhas9dhas9d8', n_active: 'testdoc.js'
+	        }));
+	    }
+
+	    connection.onmessage = function (message) {
+	        var message = JSON.parse(message.data);
+
+	        switch (message.endPoint) {
+	        	case 'current_file_data':
+	        			editor.setValue(message.data);
+	        			editor.clearSelection();
+	        		break;
+
+	            case 'close':
+	                	this.close();
+	                break;
+
+	        }
+
+	    }
+
+	    editor.addEventListener ('change', function (e) {
+	    	connection.send(JSON.stringify({
+	            endPoint: 'change', data: editor.getValue()
+	        }));
+	    });
+
+	</script>
+</html>

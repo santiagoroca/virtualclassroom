@@ -1,0 +1,63 @@
+<html>
+	<head>
+		
+		<style type="text/css" media="screen">
+
+			body {
+				overflow: hidden;
+			}
+
+			#editor {
+				margin: 0;
+				position: absolute;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				right: 0;
+			}
+
+		</style>
+	</head>
+	<body>
+		<pre id="editor"></pre>
+		
+		<script src="src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+			var editor = ace.edit("editor");
+			editor.setTheme("ace/theme/twilight");
+			editor.getSession().setMode("ace/mode/javascript");
+			editor.setReadOnly (true);
+		</script>
+
+		<script>
+
+			this.WebSocket = this.WebSocket || this.MozWebSocket;
+		    var connection = new this.WebSocket('ws://localhost:8888');
+
+		    connection.onopen = function () {
+		        this.send(JSON.stringify({
+		            endPoint: 'register', type: 'STUDENT', c_id: 'ads89hasda9hsda89s8dhas8dhas9dhas9dhas9d8', id: Math.floor((Math.random() * 10000) + 1)
+		        }));
+		    }
+
+		    connection.onmessage = function (message) {
+		        var message = JSON.parse(message.data);
+
+		        switch (message.endPoint) {
+
+		        	case 'change': {
+		        		editor.setValue (message.data); 
+		        		editor.clearSelection();
+		        	} break;
+
+		            case 'close':
+		                this.close();
+		                break;
+
+		        }
+
+		    }
+
+		</script>
+	</body>
+</html>
